@@ -1,0 +1,2 @@
+This module contains the methods to store and retreive any media (photos/vidoes) for a business.  This media
+may then be included in the website, or presented in a gallery form.
