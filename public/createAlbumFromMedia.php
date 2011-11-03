@@ -55,7 +55,7 @@ function ciniki_media_createAlbumFromMedia($ciniki) {
 	// Check there is at least 1 media element to be included in the album
 	//
 	if( !isset($args['media'][0]) || $args['media'][0] < 1 ) {
-		return array('stat'=>'fail', 'err'=>array('code'=>'324', 'msg'=>'No media specified'));
+		return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'324', 'msg'=>'No media specified'));
 	}
 	$primary_media_id = $args['media'][0];
 
@@ -85,7 +85,7 @@ function ciniki_media_createAlbumFromMedia($ciniki) {
 
 	if( !isset($rc['info']) || !isset($rc['info']['type']) ) {
 		ciniki_core_dbTransactionRollback($ciniki, 'media');
-		return array('stat'=>'fail', 'err'=>array('code'=>'312', 'msg'=>'No media specified'));
+		return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'312', 'msg'=>'No media specified'));
 	}
 	
 	//
@@ -106,7 +106,7 @@ function ciniki_media_createAlbumFromMedia($ciniki) {
 		$rc = ciniki_images_getImageTitle($ciniki, $args['business_id'], $rc['info']['remote_id']);
 		if( $rc['stat'] != 'ok' ) { 	
 			ciniki_core_dbTransactionRollback($ciniki, 'media');
-			return array('stat'=>'fail', 'err'=>array('code'=>'343', 'msg'=>'No media specified', 'err'=>$rc['err']));
+			return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'343', 'msg'=>'No media specified', 'err'=>$rc['err']));
 		}
 		$album_info['title'] = $rc['title'];
 	} elseif( $rc['info']['type'] == 1 ) {
@@ -116,16 +116,16 @@ function ciniki_media_createAlbumFromMedia($ciniki) {
 		$rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'media', 'details');
 		if( $rc['stat'] != 'ok' ) { 	
 			ciniki_core_dbTransactionRollback($ciniki, 'media');
-			return array('stat'=>'fail', 'err'=>array('code'=>'310', 'msg'=>'No media specified', 'err'=>$rc['err']));
+			return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'310', 'msg'=>'No media specified', 'err'=>$rc['err']));
 		}
 		if( !isset($rc['details']) || !isset($rc['details']['detail_value']) ) {
 			ciniki_core_dbTransactionRollback($ciniki, 'media');
-			return array('stat'=>'fail', 'err'=>array('code'=>'302', 'msg'=>'No media specified', 'err'=>$rc['err']));
+			return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'302', 'msg'=>'No media specified', 'err'=>$rc['err']));
 		}
 		$album_info['title'] = $rc['details']['title'];
 	} else {
 		ciniki_core_dbTransactionRollback($ciniki, 'media');
-		return array('stat'=>'fail', 'err'=>array('code'=>'311', 'msg'=>'Unsupported media'));
+		return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'311', 'msg'=>'Unsupported media'));
 	}
 
 	//
@@ -135,11 +135,11 @@ function ciniki_media_createAlbumFromMedia($ciniki) {
 	$rc = ciniki_media_createAlbum($ciniki, $args['business_id'], $args['parent_id'], $album_info);
 	if( $rc['stat'] != 'ok' ) {
 		ciniki_core_dbTransactionRollback($ciniki, 'media');
-		return array('stat'=>'fail', 'err'=>array('code'=>'293', 'msg'=>'Unable to create album', 'err'=>$rc['err']));
+		return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'293', 'msg'=>'Unable to create album', 'err'=>$rc['err']));
 	}
 	if( !isset($rc['id']) || $rc['id'] < 1 ) {
 		ciniki_core_dbTransactionRollback($ciniki, 'media');
-		return array('stat'=>'fail', 'err'=>array('code'=>'294', 'msg'=>'Unable to create album'));
+		return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'294', 'msg'=>'Unable to create album'));
 	}
 	$parent_id = $rc['id'];
 
@@ -152,7 +152,7 @@ function ciniki_media_createAlbumFromMedia($ciniki) {
 	$rc = ciniki_core_dbUpdate($ciniki, $strsql, 'media');
 	if( $rc['stat'] != 'ok' ) {
 		ciniki_core_dbTransactionRollback($ciniki, 'media');
-		return array('stat'=>'fail', 'err'=>array('code'=>'292', 'msg'=>'Unable to create album', 'err'=>$rc['err']));
+		return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'292', 'msg'=>'Unable to create album', 'err'=>$rc['err']));
 	}
 
 	//
@@ -165,7 +165,7 @@ function ciniki_media_createAlbumFromMedia($ciniki) {
 		$rc = ciniki_core_dbUpdate($ciniki, $strsql, 'media');
 		if( $rc['stat'] != 'ok' ) {
 			ciniki_core_dbTransactionRollback($ciniki, 'media');
-			return array('stat'=>'fail', 'err'=>array('code'=>'291', 'msg'=>'Unable to create album', 'err'=>$rc['err']));
+			return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'291', 'msg'=>'Unable to create album', 'err'=>$rc['err']));
 		}
 	}
 

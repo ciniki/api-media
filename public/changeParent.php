@@ -75,11 +75,11 @@ function ciniki_media_changeParent($ciniki) {
 	$rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'media', 'parent');
 	if( $rc['stat'] != 'ok' ) { 
 		ciniki_core_dbTransactionRollback($ciniki, 'media');
-		return array('stat'=>'fail', 'err'=>array('code'=>'351', 'msg'=>'Unable to move', 'err'=>$rc['err']));
+		return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'351', 'msg'=>'Unable to move', 'err'=>$rc['err']));
 	}
 	if( !isset($rc['parent']) || !isset($rc['parent']['parent_id']) || $rc['parent']['parent_id'] < 0 ) {
 		ciniki_core_dbTransactionRollback($ciniki, 'media');
-		return array('stat'=>'fail', 'err'=>array('code'=>'352', 'msg'=>'Unable to move'));
+		return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'352', 'msg'=>'Unable to move'));
 	}
 	$old_parent_id = $rc['parent']['parent_id'];
 
@@ -94,7 +94,7 @@ function ciniki_media_changeParent($ciniki) {
 	$rc = ciniki_core_dbUpdate($ciniki, $strsql, 'media', 'info');
 	if( $rc['stat'] != 'ok' ) { 	
 		ciniki_core_dbTransactionRollback($ciniki, 'media');
-		return array('stat'=>'fail', 'err'=>array('code'=>'353', 'msg'=>'Unable to move', 'err'=>$rc['err']));
+		return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'353', 'msg'=>'Unable to move', 'err'=>$rc['err']));
 	}
 
 	//
@@ -109,7 +109,7 @@ function ciniki_media_changeParent($ciniki) {
 		$rc = ciniki_core_dbCount($ciniki, $strsql, 'media', 'items');
 		if( $rc['stat'] != 'ok' ) { 	
 			ciniki_core_dbTransactionRollback($ciniki, 'media');
-			return array('stat'=>'fail', 'err'=>array('code'=>'354', 'msg'=>'Unable to move', 'err'=>$rc['err']));
+			return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'354', 'msg'=>'Unable to move', 'err'=>$rc['err']));
 		}
 		//
 		// If no rows returned, then nothing left, and album can be removed
@@ -122,7 +122,7 @@ function ciniki_media_changeParent($ciniki) {
 			$rc = ciniki_core_dbDelete($ciniki, $strsql, 'media');
 			if( $rc['stat'] != 'ok' ) { 	
 				ciniki_core_dbTransactionRollback($ciniki, 'media');
-				return array('stat'=>'fail', 'err'=>array('code'=>'355', 'msg'=>'Unable to move', 'err'=>$rc['err']));
+				return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'355', 'msg'=>'Unable to move', 'err'=>$rc['err']));
 			}
 			$strsql = "DELETE FROM media_details "
 				. "WHERE media_id = '" . ciniki_core_dbQuote($ciniki, $old_parent_id) . "' "
@@ -130,7 +130,7 @@ function ciniki_media_changeParent($ciniki) {
 			$rc = ciniki_core_dbDelete($ciniki, $strsql, 'media');
 			if( $rc['stat'] != 'ok' ) { 	
 				ciniki_core_dbTransactionRollback($ciniki, 'media');
-				return array('stat'=>'fail', 'err'=>array('code'=>'356', 'msg'=>'Unable to move', 'err'=>$rc['err']));
+				return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'356', 'msg'=>'Unable to move', 'err'=>$rc['err']));
 			}
 		}
 	}

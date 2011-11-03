@@ -55,7 +55,7 @@ function ciniki_media_createAlbum($ciniki, $business_id, $parent_id, $album_info
 		return $rc;
 	}
 	if( !isset($rc['insert_id']) || $rc['insert_id'] < 1 ) {
-		return array('stat'=>'fail', 'err'=>array('code'=>'350', 'msg'=>'Unable to create album'));
+		return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'350', 'msg'=>'Unable to create album'));
 	}
 	$album_id = $rc['insert_id'];
 

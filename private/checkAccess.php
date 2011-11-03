@@ -39,17 +39,17 @@ function ciniki_media_checkAccess($ciniki, $business_id, $method, $media) {
 	require_once($ciniki['config']['core']['modules_dir'] . '/core/private/dbHashQuery.php');
 	$rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'businesses', 'module');
 	if( $rc['stat'] != 'ok' ) {
-		return array('stat'=>'fail', 'err'=>array('code'=>'344', 'msg'=>'Access denied.', 'err'=>$rc['err']));
+		return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'344', 'msg'=>'Access denied.', 'err'=>$rc['err']));
 	}
 	if( !isset($rc['module']) || !isset($rc['module']['ruleset']) || $rc['module']['ruleset'] == '' ) {
-		return array('stat'=>'fail', 'err'=>array('code'=>'319', 'msg'=>'Access denied.'));
+		return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'319', 'msg'=>'Access denied.'));
 	}
 
 	//
 	// Check to see if the ruleset is valid
 	//
 	if( !isset($rulesets[$rc['module']['ruleset']]) ) {
-		return array('stat'=>'fail', 'err'=>array('code'=>'320', 'msg'=>'Access denied.'));
+		return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'320', 'msg'=>'Access denied.'));
 	}
 	$ruleset = $rc['module']['ruleset'];
 
@@ -62,7 +62,7 @@ function ciniki_media_checkAccess($ciniki, $business_id, $method, $media) {
 	} elseif( isset($rulesets[$ruleset]['default']) ) {
 		$rules = $rulesets[$ruleset]['default'];
 	} else {
-		return array('stat'=>'fail', 'err'=>array('code'=>'321', 'msg'=>'Access denied.'));
+		return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'321', 'msg'=>'Access denied.'));
 	}
 
 	//
@@ -81,16 +81,16 @@ function ciniki_media_checkAccess($ciniki, $business_id, $method, $media) {
 		require_once($ciniki['config']['core']['modules_dir'] . '/core/private/dbHashIDQuery.php');
 		$rc = ciniki_core_dbHashIDQuery($ciniki, $strsql, 'media', 'ids', 'id');
 		if( $rc['stat'] != 'ok' ) {
-			return array('stat'=>'fail', 'err'=>array('code'=>'345', 'msg'=>'Access denied.', 'err'=>$rc['err']));
+			return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'345', 'msg'=>'Access denied.', 'err'=>$rc['err']));
 		}
 		if( !isset($rc['ids']) ) {
-			return array('stat'=>'fail', 'err'=>array('code'=>'346', 'msg'=>'Access denied.'));
+			return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'346', 'msg'=>'Access denied.'));
 		}
 		foreach($media as $media_id) {
 			if( !isset($rc['ids'][$media_id]) || !isset($rc['ids'][$media_id]['business_id']) 
 				|| $rc['ids'][$media_id]['business_id'] != $business_id ) {
 				ciniki_core_logSecurity($ciniki, $strsql, 347, $method, 'media', $media_id);
-				return array('stat'=>'fail', 'err'=>array('code'=>'347', 'msg'=>'Access denied.'));
+				return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'347', 'msg'=>'Access denied.'));
 			}
 		}
 	}
@@ -117,7 +117,7 @@ function ciniki_media_checkAccess($ciniki, $business_id, $method, $media) {
 		}
 		// Error if more than one row, or no rows found.
 		if( $rc['num_rows'] != 1 ) {
-			return array('stat'=>'fail', 'err'=>array('code'=>'322', 'msg'=>'Access denied.'));
+			return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'322', 'msg'=>'Access denied.'));
 		}
 		// Double check business_id and user_id match, for single row returned.
 		if( $rc['user']['business_id'] == $business_id && $rc['user']['user_id'] = $ciniki['session']['user']['id'] ) {
@@ -170,6 +170,6 @@ function ciniki_media_checkAccess($ciniki, $business_id, $method, $media) {
 	//
 	// By default, fail
 	//
-	return array('stat'=>'fail', 'err'=>array('code'=>'323', 'msg'=>'Access denied.'));
+	return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'323', 'msg'=>'Access denied.'));
 }
 ?>

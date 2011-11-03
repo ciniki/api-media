@@ -72,7 +72,7 @@ function ciniki_media_getAlbumContents($ciniki) {
 	require_once($ciniki['config']['core']['modules_dir'] . '/core/private/dbFetchHashRow.php');
 	$rc = ciniki_core_dbQuery($ciniki, $strsql, 'media');
 	if( $rc['stat'] != 'ok' ) {
-		return array('stat'=>'fail', 'err'=>array('code'=>'325', 'msg'=>'Unable to find album content', 'err'=>$rc['err']));
+		return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'325', 'msg'=>'Unable to find album content', 'err'=>$rc['err']));
 	}
 	$dh = $rc['handle'];
 
@@ -110,7 +110,7 @@ function ciniki_media_getAlbumContents($ciniki) {
 		require_once($ciniki['config']['core']['modules_dir'] . '/images/private/getImagesFromArray.php');
 		$rc = ciniki_images_getImagesFromArray($ciniki, $args['business_id'], $image_ids);
 		if( $rc['stat'] != 'ok' ) {
-			return array('stat'=>'fail', 'err'=>array('code'=>'326', 'msg'=>'Error getting image information', 'err'=>$rc['err']));
+			return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'326', 'msg'=>'Error getting image information', 'err'=>$rc['err']));
 		}
 		$images = $rc['images'];
 	} else {
@@ -126,7 +126,7 @@ function ciniki_media_getAlbumContents($ciniki) {
 			. "WHERE media_id IN (" . ciniki_core_dbQuoteIDs($ciniki, $album_ids) . ") AND detail_key = 'title' ";
 		$rc = ciniki_core_dbHashIDQuery($ciniki, $strsql, 'media', 'albums', 'media_id');
 		if( $rc['stat'] != 'ok' ) {
-			return array('stat'=>'fail', 'err'=>array('code'=>'327', 'msg'=>'Error getting album information', 'err'=>$rc['err']));
+			return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'327', 'msg'=>'Error getting album information', 'err'=>$rc['err']));
 		}
 		$albums = $rc['albums'];
 	} else {

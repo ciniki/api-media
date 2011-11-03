@@ -48,12 +48,12 @@ function ciniki_media_uploadImage($ciniki) {
 	// Check to make sure a file was uploaded
 	//
 	if( isset($_FILES['uploadfile']['error']) && $_FILES['uploadfile']['error'] == UPLOAD_ERR_INI_SIZE ) {
-		return array('stat'=>'fail', 'err'=>array('code'=>'300', 'msg'=>'Upload failed, file too large.'));
+		return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'300', 'msg'=>'Upload failed, file too large.'));
 	}
 	// FIXME: Add other checkes for $_FILES['uploadfile']['error']
 
 	if( !isset($_FILES) || !isset($_FILES['uploadfile']) || $_FILES['uploadfile']['tmp_name'] == '' ) {
-		return array('stat'=>'fail', 'err'=>array('code'=>'301', 'msg'=>'Upload failed, no file specified.'));
+		return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'301', 'msg'=>'Upload failed, no file specified.'));
 	}
 	$uploaded_file = $_FILES['uploadfile']['tmp_name'];
 
@@ -65,7 +65,7 @@ function ciniki_media_uploadImage($ciniki) {
 	require($ciniki['config']['core']['modules_dir'] . '/core/private/dbTransactionCommit.php');
 	$rc = ciniki_core_dbTransactionStart($ciniki, 'media');
 	if( $rc['stat'] != 'ok' ) { 
-		return array('stat'=>'fail', 'err'=>array('code'=>'303', 'msg'=>'Internal Error', 'err'=>$rc['err']));
+		return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'303', 'msg'=>'Internal Error', 'err'=>$rc['err']));
 	}   
 
 	//
@@ -82,13 +82,13 @@ function ciniki_media_uploadImage($ciniki) {
 		$_FILES['uploadfile'], 1, '', '', $args['force_duplicate']);
 	if( $rc['stat'] != 'ok' ) {
 		ciniki_core_dbTransactionRollback($ciniki, 'media');
-		return array('stat'=>'fail', 'err'=>array('code'=>'304', 'msg'=>'Internal Error', 'err'=>$rc['err']));
+		return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'304', 'msg'=>'Internal Error', 'err'=>$rc['err']));
 	}
 
 	$image_id = 0;
 	if( !isset($rc['id']) ) {
 		ciniki_core_dbTransactionRollback($ciniki, 'media');
-		return array('stat'=>'fail', 'err'=>array('code'=>'305', 'msg'=>'Invalid file type'));
+		return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'305', 'msg'=>'Invalid file type'));
 	}
 	$image_id = $rc['id'];
 
@@ -103,7 +103,7 @@ function ciniki_media_uploadImage($ciniki) {
 	$rc = ciniki_core_dbUpdate($ciniki, $strsql, 'media');
 	if( $rc['stat'] != 'ok' ) {
 		ciniki_core_dbTransactionRollback($ciniki, 'media');
-		return array('stat'=>'fail', 'err'=>array('code'=>'328', 'msg'=>'Unable to insert into sequence'));
+		return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'328', 'msg'=>'Unable to insert into sequence'));
 	}
 
 	//
@@ -119,12 +119,12 @@ function ciniki_media_uploadImage($ciniki) {
 	$rc = ciniki_core_dbInsert($ciniki, $strsql, 'media');
 	if( $rc['stat'] != 'ok' ) {
 		ciniki_core_dbTransactionRollback($ciniki, 'media');
-		return array('stat'=>'fail', 'err'=>array('code'=>'318', 'msg'=>'Unable to upload media', 'err'=>$rc['err']));
+		return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'318', 'msg'=>'Unable to upload media', 'err'=>$rc['err']));
 	}
 
 	$rc = ciniki_core_dbTransactionCommit($ciniki, 'media');
 	if( $rc['stat'] != 'ok' ) {
-		return array('stat'=>'fail', 'err'=>array('code'=>'331', 'msg'=>'Unable to upload media', 'err'=>$rc['err']));
+		return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'331', 'msg'=>'Unable to upload media', 'err'=>$rc['err']));
 	}
 
 	return array('stat'=>'ok', 'id'=>$image_id);

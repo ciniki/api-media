@@ -53,7 +53,7 @@ function ciniki_media_deleteMedia($ciniki) {
 		. "AND id = '" . ciniki_core_dbQuote($ciniki, $args['media_id']) . "' ";
 	$rc = ciniki_core_dbUpdate($ciniki, $strsql, 'media');
 	if( $rc['stat'] != 'ok' ) { 
-		return array('stat'=>'fail', 'err'=>array('code'=>'338', 'msg'=>'Unable to delete media', 'err'=>$rc['err']));
+		return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'338', 'msg'=>'Unable to delete media', 'err'=>$rc['err']));
 	}
 
 	return array('stat'=>'ok');
