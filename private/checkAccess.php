@@ -29,12 +29,12 @@ function ciniki_media_checkAccess($ciniki, $business_id, $method, $media) {
 	// Check the business is active
 	// Get the ruleset for this module
 	//
-	$strsql = "SELECT ruleset FROM businesses, business_modules "
-		. "WHERE businesses.id = '" . ciniki_core_dbQuote($ciniki, $business_id) . "' "
-		. "AND businesses.status = 1 "														// Business is active
-		. "AND businesses.id = business_modules.business_id "
-		. "AND business_modules.package = 'ciniki' "
-		. "AND business_modules.module = 'media' "
+	$strsql = "SELECT ruleset FROM ciniki_businesses, ciniki_business_modules "
+		. "WHERE ciniki_businesses.id = '" . ciniki_core_dbQuote($ciniki, $business_id) . "' "
+		. "AND ciniki_businesses.status = 1 "														// Business is active
+		. "AND ciniki_businesses.id = ciniki_business_modules.business_id "
+		. "AND ciniki_business_modules.package = 'ciniki' "
+		. "AND ciniki_business_modules.module = 'media' "
 		. "";
 	require_once($ciniki['config']['core']['modules_dir'] . '/core/private/dbHashQuery.php');
 	$rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'businesses', 'module');
@@ -74,7 +74,7 @@ function ciniki_media_checkAccess($ciniki, $business_id, $method, $media) {
 	// fails, access will be denied.
 	//
 	if( $media != null ) {
-		$strsql = "SELECT id, business_id FROM media "
+		$strsql = "SELECT id, business_id FROM ciniki_media "
 			. "WHERE business_id = '" . ciniki_core_dbQuote($ciniki, $business_id) . "' "
 			. "AND id IN (" . ciniki_core_dbQuoteIDs($ciniki, $media) . ") "
 			. "";
@@ -107,7 +107,7 @@ function ciniki_media_checkAccess($ciniki, $business_id, $method, $media) {
 		// Compare the session users bitmask, with the bitmask specified in the rules
 		// If when AND'd together, any bits are set, they have access.
 		//
-		$strsql = sprintf("SELECT business_id, user_id FROM business_users "
+		$strsql = sprintf("SELECT business_id, user_id FROM ciniki_business_users "
 			. "WHERE business_id = '" . ciniki_core_dbQuote($ciniki, $business_id) . "' "
 			. "AND user_id = '" . ciniki_core_dbQuote($ciniki, $ciniki['session']['user']['id']) . "' "
 			. "AND (groups & 0x%x) > 0 ", ciniki_core_dbQuote($ciniki, $rules['business_group']));
@@ -131,10 +131,10 @@ function ciniki_media_checkAccess($ciniki, $business_id, $method, $media) {
 	// any active business.  This allows them to submit MODULE via ciniki-manage.
 	//
 	if( isset($rules['customer']) && $rules['customer'] == 'any' && $ciniki['config']['core']['master_business_id'] == $business_id ) {
-		$strsql = "SELECT user_id FROM business_users, businesses "
-			. "WHERE business_users.user_id = '" . ciniki_core_dbQuote($ciniki, $ciniki['session']['user']['id']) . "' "
-			. "AND business_users.business_id = businesses.id "
-			. "AND businesses.status = 1 ";
+		$strsql = "SELECT user_id FROM ciniki_business_users, ciniki_businesses "
+			. "WHERE ciniki_business_users.user_id = '" . ciniki_core_dbQuote($ciniki, $ciniki['session']['user']['id']) . "' "
+			. "AND ciniki_business_users.business_id = ciniki_businesses.id "
+			. "AND ciniki_businesses.status = 1 ";
 		$rc = mysql_core_dbHashQuery($ciniki, $strsql, 'businesses', 'user');
 		if( $rc['stat'] != 'ok' ) {
 			return $rc;

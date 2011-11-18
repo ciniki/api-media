@@ -57,7 +57,7 @@ function ciniki_media_getTrashContents($ciniki) {
 	$strsql = "SELECT id, parent_id, type, remote_id, sequence, perms, "
 		. "DATE_FORMAT(date_added, '" . ciniki_core_dbQuote($ciniki, $date_format) . "') as date_added, "
 		. "DATE_FORMAT(last_updated, '" . ciniki_core_dbQuote($ciniki, $date_format) . "') as last_updated "
-		. "FROM media "
+		. "FROM ciniki_media "
 		. "WHERE business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' ";
 	if( isset($args['parent_id']) ) {
 		$strsql .= "AND parent_id = '" . ciniki_core_dbQuote($ciniki, $args['parent_id']) . "' "
@@ -125,7 +125,7 @@ function ciniki_media_getTrashContents($ciniki) {
 	//
 	if( count($album_ids) > 0 ) {
 		require_once($ciniki['config']['core']['modules_dir'] . '/core/private/dbHashIDQuery.php');
-		$strsql = "SELECT media_id, detail_key, detail_value FROM media_details "
+		$strsql = "SELECT media_id, detail_key, detail_value FROM ciniki_media_details "
 			. "WHERE media_id IN (" . ciniki_core_dbQuoteIDs($ciniki, $album_ids) . ") AND detail_key = 'title' ";
 		$rc = ciniki_core_dbHashIDQuery($ciniki, $strsql, 'media', 'albums', 'media_id');
 		if( $rc['stat'] != 'ok' ) {

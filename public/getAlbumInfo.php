@@ -3,11 +3,7 @@
 // Description
 // -----------
 // This function returns the list of details about an album,
-// including the information from media and media_details.
-//
-// Info
-// ----
-// Status: defined
+// including the information from media and ciniki_media_details.
 //
 // Arguments
 // ---------

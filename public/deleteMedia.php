@@ -48,7 +48,7 @@ function ciniki_media_deleteMedia($ciniki) {
 	//
 	// Update the flags on the media to indicate deleted
 	//
-	$strsql = "UPDATE media SET flags = flags | 0x01 "
+	$strsql = "UPDATE ciniki_media SET flags = flags | 0x01 "
 		. "WHERE business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
 		. "AND id = '" . ciniki_core_dbQuote($ciniki, $args['media_id']) . "' ";
 	$rc = ciniki_core_dbUpdate($ciniki, $strsql, 'media');

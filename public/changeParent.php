@@ -68,7 +68,7 @@ function ciniki_media_changeParent($ciniki) {
 	//
 	// Check the original parents
 	//
-	$strsql = "SELECT parent_id FROM media "
+	$strsql = "SELECT parent_id FROM ciniki_media "
 		. "WHERE business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
 		. "AND id = '" . ciniki_core_dbQuote($ciniki, $args['media_id']) . "' "
 		. "";
@@ -86,7 +86,7 @@ function ciniki_media_changeParent($ciniki) {
 	//
 	// Update the parent_id
 	//
-	$strsql = "UPDATE media SET parent_id = '" . ciniki_core_dbQuote($ciniki, $args['parent_id']) . "', "
+	$strsql = "UPDATE ciniki_media SET parent_id = '" . ciniki_core_dbQuote($ciniki, $args['parent_id']) . "', "
 		. "last_updated = UTC_TIMESTAMP() "
 		. "WHERE business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
 		. "AND id = '" . ciniki_core_dbQuote($ciniki, $args['media_id']) . "' "
@@ -102,7 +102,7 @@ function ciniki_media_changeParent($ciniki) {
 	// check if the original album is now empty and should be deleted.
 	//
 	if( $old_parent_id > 0 ) {
-		$strsql = "SELECT parent_id, COUNT(id) FROM media "
+		$strsql = "SELECT parent_id, COUNT(id) FROM ciniki_media "
 			. "WHERE business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
 			. "AND parent_id = '" . ciniki_core_dbQuote($ciniki, $old_parent_id) . "' "
 			. "GROUP BY parent_id ";
@@ -115,7 +115,7 @@ function ciniki_media_changeParent($ciniki) {
 		// If no rows returned, then nothing left, and album can be removed
 		//
 		if( !isset($rc['items']) || !isset($rc['items'][$old_parent_id]) || $rc['items'][$old_parent_id] < 1 ) {
-			$strsql = "DELETE FROM media "
+			$strsql = "DELETE FROM ciniki_media "
 				. "WHERE business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
 				. "AND id = '" . ciniki_core_dbQuote($ciniki, $old_parent_id) . "' "
 				. "";
@@ -124,7 +124,7 @@ function ciniki_media_changeParent($ciniki) {
 				ciniki_core_dbTransactionRollback($ciniki, 'media');
 				return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'355', 'msg'=>'Unable to move', 'err'=>$rc['err']));
 			}
-			$strsql = "DELETE FROM media_details "
+			$strsql = "DELETE FROM ciniki_media_details "
 				. "WHERE media_id = '" . ciniki_core_dbQuote($ciniki, $old_parent_id) . "' "
 				. "";
 			$rc = ciniki_core_dbDelete($ciniki, $strsql, 'media');

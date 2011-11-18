@@ -73,7 +73,7 @@ function ciniki_media_createAlbumFromMedia($ciniki) {
 	//
 	// Get the info from the media_id
 	//
-	$strsql = "SELECT type, remote_id, sequence, perms, flags FROM media "
+	$strsql = "SELECT type, remote_id, sequence, perms, flags FROM ciniki_media "
 		. "WHERE business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
 		. "AND id = '" . ciniki_core_dbQuote($ciniki, $primary_media_id) . "' "
 		. "";
@@ -110,7 +110,7 @@ function ciniki_media_createAlbumFromMedia($ciniki) {
 		}
 		$album_info['title'] = $rc['title'];
 	} elseif( $rc['info']['type'] == 1 ) {
-		$strsql = "SELECT detail_value FROM media_details "
+		$strsql = "SELECT detail_value FROM ciniki_media_details "
 			. "WHERE media_id = '" . ciniki_core_dbQuote($ciniki, $primary_media_id) . "' "
 			. "AND detail_key = 'title'";
 		$rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'media', 'details');
@@ -146,7 +146,7 @@ function ciniki_media_createAlbumFromMedia($ciniki) {
 	//
 	// Move the specified media into the new album
 	//
-	$strsql = "UPDATE media SET parent_id = '" . ciniki_core_dbQuote($ciniki, $parent_id) . "' "
+	$strsql = "UPDATE ciniki_media SET parent_id = '" . ciniki_core_dbQuote($ciniki, $parent_id) . "' "
 		. "WHERE business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
 		. "AND id IN (" . ciniki_core_dbQuoteIDs($ciniki, $args['media']) . ")";
 	$rc = ciniki_core_dbUpdate($ciniki, $strsql, 'media');
@@ -159,7 +159,7 @@ function ciniki_media_createAlbumFromMedia($ciniki) {
 	// Update the last_updated field of the parent
 	//
 	if( $parent_id > 0 ) {
-		$strsql = "UPDATE media SET last_updated = UTC_TIMESTAMP() "
+		$strsql = "UPDATE ciniki_media SET last_updated = UTC_TIMESTAMP() "
 			. "WHERE business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
 			. "AND id = '" . ciniki_core_dbQuote($ciniki, $parent_id) . "' ";
 		$rc = ciniki_core_dbUpdate($ciniki, $strsql, 'media');

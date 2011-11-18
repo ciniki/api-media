@@ -95,7 +95,7 @@ function ciniki_media_uploadImage($ciniki) {
 	//
 	// Push any current media content entrys up the sequence to make room.
 	//
-	$strsql = "UPDATE media SET sequence = sequence + 1 "
+	$strsql = "UPDATE ciniki_media SET sequence = sequence + 1 "
 		. "WHERE business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
 		. "AND parent_id = '" . ciniki_core_dbQuote($ciniki, $args['parent_id']) . "' "
 		. "AND sequence >= '" . ciniki_core_dbQuote($ciniki, $args['sequence']) . "' ";
@@ -109,7 +109,7 @@ function ciniki_media_uploadImage($ciniki) {
 	//
 	// Insert the image into the media table
 	//
-	$strsql = "INSERT INTO media (business_id, parent_id, type, remote_id, sequence, perms, date_added, last_updated"
+	$strsql = "INSERT INTO ciniki_media (business_id, parent_id, type, remote_id, sequence, perms, date_added, last_updated"
 		. ") VALUES ("
 		. "'" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "', "
 		. "'" . ciniki_core_dbQuote($ciniki, $args['parent_id']) . "', "

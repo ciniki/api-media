@@ -23,7 +23,7 @@ function ciniki_media_createAlbum($ciniki, $business_id, $parent_id, $album_info
 	//
 	// Create a new album but inserting a new media element which is an album
 	//
-	$strsql = "INSERT INTO media (business_id, parent_id, type, remote_id, "
+	$strsql = "INSERT INTO ciniki_media (business_id, parent_id, type, remote_id, "
 		. "sequence, perms, flags, date_added, last_updated) VALUES ("
 		. "'" . ciniki_core_dbQuote($ciniki, $business_id) . "', "
 		. "'" . ciniki_core_dbQuote($ciniki, $parent_id) . "', "
@@ -61,7 +61,7 @@ function ciniki_media_createAlbum($ciniki, $business_id, $parent_id, $album_info
 
 
 	if( isset($album_info['title']) ) {
-		$strsql = "INSERT INTO media_details (media_id, detail_key, detail_value, date_added, last_updated"
+		$strsql = "INSERT INTO ciniki_media_details (media_id, detail_key, detail_value, date_added, last_updated"
 			. ") VALUES ("
 			. "'" . ciniki_core_dbQuote($ciniki, $album_id) . "', "
 			. "'title', "

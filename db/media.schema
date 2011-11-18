@@ -56,7 +56,7 @@
 # date_added:		The date and time the record was added.
 # last_updated:		The date and time the record was last updated.
 #
-create table media (
+create table ciniki_media (
 	id int not null auto_increment,
 	business_id int not null,
 	parent_id int not null,
