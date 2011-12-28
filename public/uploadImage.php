@@ -109,8 +109,9 @@ function ciniki_media_uploadImage($ciniki) {
 	//
 	// Insert the image into the media table
 	//
-	$strsql = "INSERT INTO ciniki_media (business_id, parent_id, type, remote_id, sequence, perms, date_added, last_updated"
+	$strsql = "INSERT INTO ciniki_media (uuid, business_id, parent_id, type, remote_id, sequence, perms, date_added, last_updated"
 		. ") VALUES ("
+		. "UUID(), "
 		. "'" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "', "
 		. "'" . ciniki_core_dbQuote($ciniki, $args['parent_id']) . "', "
 		. "128, '" . ciniki_core_dbQuote($ciniki, $image_id) . "', "

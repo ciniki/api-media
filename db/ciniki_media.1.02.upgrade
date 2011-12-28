@@ -1,0 +1,7 @@
+#
+# This file will upgrade the database table media to version 1.02.
+#
+ALTER TABLE ciniki_media ADD COLUMN uuid char(36) not null after id;
+UPDATE ciniki_media SET uuid = uuid();
+CREATE UNIQUE INDEX idx_uuid ON ciniki_media (uuid);
+ALTER TABLE ciniki_media COMMENT='v1.02';
