@@ -18,22 +18,12 @@
 function ciniki_media_getRulesets($ciniki) {
 
 	//
-	// Permissions can be in the form of=> 
-	//		- owners, any employee in the group 0x0001 (owner) in business_users.
-	//		- group, any employee in the group 0x2000 (media) in business_users.
-	//		- employee, any employee in the group 0x0002 (employee) in business_users.
-	//		- employees, customer, customers
-	//
-	// - business_group - 0x2001, (any owners) or (employees in group Media)
-	// - business_group - 0x2003, (any owners) or (any employees) or (employees in group Media)
-	// - business_group - blank/non-existent, ignored
-	//
-	// business_group rules are OR'd together with customers rules
+	// permission_groups rules are OR'd together with customers rules
 	//
 	// - customers - 'any', (any customers of the business)
 	// - customers - 'self', (the session user_id must be the same as requested user_id)
 	//
-	// *note* A function can only be allowed to customers, if there is no business_group rule.
+	// *note* A function can only be allowed to customers, if there is no permission_groups rule.
 	//
 
 	return array(
@@ -62,7 +52,7 @@ function ciniki_media_getRulesets($ciniki) {
 				'employees'=>'all tasks',
 				'customers'=>'no access.'
 				),
-			'default'=>array('business_group'=>0x2003),
+			'default'=>array('permission_groups'=>array('ciniki.owners', 'ciniki.employees', 'ciniki.media')),
 			'methods'=>array()
 			),
 
@@ -79,7 +69,7 @@ function ciniki_media_getRulesets($ciniki) {
 				'employees'=>'all tasks on all media if assigned to group Media.',
 				'customers'=>'no access.'
 				),
-			'default'=>array('business_group'=>0x00002000),
+			'default'=>array('permission_groups'=>array('ciniki.media')),
 			'methods'=>array()
 			),
 	);

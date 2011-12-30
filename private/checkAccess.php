@@ -102,26 +102,25 @@ function ciniki_media_checkAccess($ciniki, $business_id, $method, $media) {
 	//
 	// If business_group specified, check the session user in the business_users table.
 	//
-	if( isset($rules['business_group']) && $rules['business_group'] > 0 ) {
+	if( isset($rules['permission_groups']) && $rules['permission_groups'] > 0 ) {
 		//
-		// Compare the session users bitmask, with the bitmask specified in the rules
-		// If when AND'd together, any bits are set, they have access.
+		// If the user is attached to the business AND in the one of the accepted permissions group, they will be granted access
 		//
-		$strsql = sprintf("SELECT business_id, user_id FROM ciniki_business_users "
+		$strsql = "SELECT business_id, user_id FROM ciniki_business_users "
 			. "WHERE business_id = '" . ciniki_core_dbQuote($ciniki, $business_id) . "' "
 			. "AND user_id = '" . ciniki_core_dbQuote($ciniki, $ciniki['session']['user']['id']) . "' "
-			. "AND (groups & 0x%x) > 0 ", ciniki_core_dbQuote($ciniki, $rules['business_group']));
+			. "AND CONCAT_WS('.', package, permission_group) IN ('" . implode("','", $rules['permission_groups']) . "') "
+			. "";
 		$rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'businesses', 'user');
 		if( $rc['stat'] != 'ok' ) {
-			return $rc;
+			return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'322', 'msg'=>'Access denied.', 'err'=>$rc['err']));
 		}
-		// Error if more than one row, or no rows found.
-		if( $rc['num_rows'] != 1 ) {
-			return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'322', 'msg'=>'Access denied.'));
-		}
-		// Double check business_id and user_id match, for single row returned.
-		if( $rc['user']['business_id'] == $business_id && $rc['user']['user_id'] = $ciniki['session']['user']['id'] ) {
-			// Access Granted!
+		
+		//
+		// If the user has permission, return ok
+		//
+		if( isset($rc['rows']) && isset($rc['rows'][0]) 
+			&& $rc['rows'][0]['user_id'] > 0 && $rc['rows'][0]['user_id'] == $ciniki['session']['user']['id'] ) {
 			return array('stat'=>'ok');
 		}
 	}
@@ -130,19 +129,19 @@ function ciniki_media_checkAccess($ciniki, $business_id, $method, $media) {
 	// When dealing with the master business, a customer can be any business employee from
 	// any active business.  This allows them to submit MODULE via ciniki-manage.
 	//
-	if( isset($rules['customer']) && $rules['customer'] == 'any' && $ciniki['config']['core']['master_business_id'] == $business_id ) {
-		$strsql = "SELECT user_id FROM ciniki_business_users, ciniki_businesses "
-			. "WHERE ciniki_business_users.user_id = '" . ciniki_core_dbQuote($ciniki, $ciniki['session']['user']['id']) . "' "
-			. "AND ciniki_business_users.business_id = ciniki_businesses.id "
-			. "AND ciniki_businesses.status = 1 ";
-		$rc = mysql_core_dbHashQuery($ciniki, $strsql, 'businesses', 'user');
-		if( $rc['stat'] != 'ok' ) {
-			return $rc;
-		}
-		if( $rc['num_rows'] > 0 ) {
-			return array('stat'=>'ok');
-		}
-	} 
+//	if( isset($rules['customer']) && $rules['customer'] == 'any' && $ciniki['config']['core']['master_business_id'] == $business_id ) {
+//		$strsql = "SELECT user_id FROM ciniki_business_users, ciniki_businesses "
+//			. "WHERE ciniki_business_users.user_id = '" . ciniki_core_dbQuote($ciniki, $ciniki['session']['user']['id']) . "' "
+//			. "AND ciniki_business_users.business_id = ciniki_businesses.id "
+//			. "AND ciniki_businesses.status = 1 ";
+//		$rc = mysql_core_dbHashQuery($ciniki, $strsql, 'businesses', 'user');
+////		if( $rc['stat'] != 'ok' ) {
+//			return $rc;
+//		}
+//		if( $rc['num_rows'] > 0 ) {
+//			return array('stat'=>'ok');
+//		}
+//	} 
 	
 	// 
 	// Check if the session user is a customer of the business
