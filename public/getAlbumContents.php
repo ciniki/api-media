@@ -70,7 +70,7 @@ function ciniki_media_getAlbumContents($ciniki) {
 	//
 	require_once($ciniki['config']['core']['modules_dir'] . '/core/private/dbQuery.php');
 	require_once($ciniki['config']['core']['modules_dir'] . '/core/private/dbFetchHashRow.php');
-	$rc = ciniki_core_dbQuery($ciniki, $strsql, 'media');
+	$rc = ciniki_core_dbQuery($ciniki, $strsql, 'ciniki.media');
 	if( $rc['stat'] != 'ok' ) {
 		return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'325', 'msg'=>'Unable to find album content', 'err'=>$rc['err']));
 	}
@@ -124,7 +124,7 @@ function ciniki_media_getAlbumContents($ciniki) {
 		require_once($ciniki['config']['core']['modules_dir'] . '/core/private/dbHashIDQuery.php');
 		$strsql = "SELECT media_id, detail_key, detail_value FROM ciniki_media_details "
 			. "WHERE media_id IN (" . ciniki_core_dbQuoteIDs($ciniki, $album_ids) . ") AND detail_key = 'title' ";
-		$rc = ciniki_core_dbHashIDQuery($ciniki, $strsql, 'media', 'albums', 'media_id');
+		$rc = ciniki_core_dbHashIDQuery($ciniki, $strsql, 'ciniki.media', 'albums', 'media_id');
 		if( $rc['stat'] != 'ok' ) {
 			return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'327', 'msg'=>'Error getting album information', 'err'=>$rc['err']));
 		}

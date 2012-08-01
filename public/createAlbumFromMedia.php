@@ -11,8 +11,11 @@
 //
 // Arguments
 // ---------
+// api_key:
+// auth_token:
 // business_id:			The business the image is attached to.
-// media_id:			The ID if the media to be marked as deleted.
+// parent_id:			The ID of the parent album, or 0 if no parent.
+// media:				The list of ID's of the media to be added to the new album.
 //
 // Returns
 // -------
@@ -65,7 +68,7 @@ function ciniki_media_createAlbumFromMedia($ciniki) {
 	require_once($ciniki['config']['core']['modules_dir'] . '/core/private/dbTransactionStart.php');
 	require_once($ciniki['config']['core']['modules_dir'] . '/core/private/dbTransactionRollback.php');
 	require_once($ciniki['config']['core']['modules_dir'] . '/core/private/dbTransactionCommit.php');
-	$rc = ciniki_core_dbTransactionStart($ciniki, 'media');
+	$rc = ciniki_core_dbTransactionStart($ciniki, 'ciniki.media');
 	if( $rc['stat'] != 'ok' ) { 
 		return $rc;
 	}   
@@ -77,14 +80,14 @@ function ciniki_media_createAlbumFromMedia($ciniki) {
 		. "WHERE business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
 		. "AND id = '" . ciniki_core_dbQuote($ciniki, $primary_media_id) . "' "
 		. "";
-	$rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'media', 'info');
+	$rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.media', 'info');
 	if( $rc['stat'] != 'ok' ) { 	
-		ciniki_core_dbTransactionRollback($ciniki, 'media');
+		ciniki_core_dbTransactionRollback($ciniki, 'ciniki.media');
 		return $rc;
 	}
 
 	if( !isset($rc['info']) || !isset($rc['info']['type']) ) {
-		ciniki_core_dbTransactionRollback($ciniki, 'media');
+		ciniki_core_dbTransactionRollback($ciniki, 'ciniki.media');
 		return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'312', 'msg'=>'No media specified'));
 	}
 	
@@ -105,7 +108,7 @@ function ciniki_media_createAlbumFromMedia($ciniki) {
 		require_once($ciniki['config']['core']['modules_dir'] . '/images/private/getImageTitle.php');
 		$rc = ciniki_images_getImageTitle($ciniki, $args['business_id'], $rc['info']['remote_id']);
 		if( $rc['stat'] != 'ok' ) { 	
-			ciniki_core_dbTransactionRollback($ciniki, 'media');
+			ciniki_core_dbTransactionRollback($ciniki, 'ciniki.media');
 			return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'343', 'msg'=>'No media specified', 'err'=>$rc['err']));
 		}
 		$album_info['title'] = $rc['title'];
@@ -113,18 +116,18 @@ function ciniki_media_createAlbumFromMedia($ciniki) {
 		$strsql = "SELECT detail_value FROM ciniki_media_details "
 			. "WHERE media_id = '" . ciniki_core_dbQuote($ciniki, $primary_media_id) . "' "
 			. "AND detail_key = 'title'";
-		$rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'media', 'details');
+		$rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.media', 'details');
 		if( $rc['stat'] != 'ok' ) { 	
-			ciniki_core_dbTransactionRollback($ciniki, 'media');
+			ciniki_core_dbTransactionRollback($ciniki, 'ciniki.media');
 			return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'310', 'msg'=>'No media specified', 'err'=>$rc['err']));
 		}
 		if( !isset($rc['details']) || !isset($rc['details']['detail_value']) ) {
-			ciniki_core_dbTransactionRollback($ciniki, 'media');
+			ciniki_core_dbTransactionRollback($ciniki, 'ciniki.media');
 			return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'302', 'msg'=>'No media specified', 'err'=>$rc['err']));
 		}
 		$album_info['title'] = $rc['details']['title'];
 	} else {
-		ciniki_core_dbTransactionRollback($ciniki, 'media');
+		ciniki_core_dbTransactionRollback($ciniki, 'ciniki.media');
 		return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'311', 'msg'=>'Unsupported media'));
 	}
 
@@ -134,11 +137,11 @@ function ciniki_media_createAlbumFromMedia($ciniki) {
 	require_once($ciniki['config']['core']['modules_dir'] . '/media/private/createAlbum.php');
 	$rc = ciniki_media_createAlbum($ciniki, $args['business_id'], $args['parent_id'], $album_info);
 	if( $rc['stat'] != 'ok' ) {
-		ciniki_core_dbTransactionRollback($ciniki, 'media');
+		ciniki_core_dbTransactionRollback($ciniki, 'ciniki.media');
 		return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'293', 'msg'=>'Unable to create album', 'err'=>$rc['err']));
 	}
 	if( !isset($rc['id']) || $rc['id'] < 1 ) {
-		ciniki_core_dbTransactionRollback($ciniki, 'media');
+		ciniki_core_dbTransactionRollback($ciniki, 'ciniki.media');
 		return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'294', 'msg'=>'Unable to create album'));
 	}
 	$parent_id = $rc['id'];
@@ -149,9 +152,9 @@ function ciniki_media_createAlbumFromMedia($ciniki) {
 	$strsql = "UPDATE ciniki_media SET parent_id = '" . ciniki_core_dbQuote($ciniki, $parent_id) . "' "
 		. "WHERE business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
 		. "AND id IN (" . ciniki_core_dbQuoteIDs($ciniki, $args['media']) . ")";
-	$rc = ciniki_core_dbUpdate($ciniki, $strsql, 'media');
+	$rc = ciniki_core_dbUpdate($ciniki, $strsql, 'ciniki.media');
 	if( $rc['stat'] != 'ok' ) {
-		ciniki_core_dbTransactionRollback($ciniki, 'media');
+		ciniki_core_dbTransactionRollback($ciniki, 'ciniki.media');
 		return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'292', 'msg'=>'Unable to create album', 'err'=>$rc['err']));
 	}
 
@@ -162,17 +165,24 @@ function ciniki_media_createAlbumFromMedia($ciniki) {
 		$strsql = "UPDATE ciniki_media SET last_updated = UTC_TIMESTAMP() "
 			. "WHERE business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
 			. "AND id = '" . ciniki_core_dbQuote($ciniki, $parent_id) . "' ";
-		$rc = ciniki_core_dbUpdate($ciniki, $strsql, 'media');
+		$rc = ciniki_core_dbUpdate($ciniki, $strsql, 'ciniki.media');
 		if( $rc['stat'] != 'ok' ) {
-			ciniki_core_dbTransactionRollback($ciniki, 'media');
+			ciniki_core_dbTransactionRollback($ciniki, 'ciniki.media');
 			return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'291', 'msg'=>'Unable to create album', 'err'=>$rc['err']));
 		}
 	}
 
-	$rc = ciniki_core_dbTransactionCommit($ciniki, 'media');
+	$rc = ciniki_core_dbTransactionCommit($ciniki, 'ciniki.media');
 	if( $rc['stat'] != 'ok' ) { 	
 		return $rc;
 	}
+
+	//
+	// Update the last_change date in the business modules
+	// Ignore the result, as we don't want to stop user updates if this fails.
+	//
+	ciniki_core_loadMethod($ciniki, 'ciniki', 'businesses', 'private', 'updateModuleChangeDate');
+	ciniki_businesses_updateModuleChangeDate($ciniki, $args['business_id'], 'ciniki', 'media');
 
 	return array('stat'=>'ok', 'id'=>$parent_id);
 }

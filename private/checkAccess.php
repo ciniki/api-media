@@ -71,7 +71,7 @@ function ciniki_media_checkAccess($ciniki, $business_id, $method, $media) {
 			. "AND id IN (" . ciniki_core_dbQuoteIDs($ciniki, $media) . ") "
 			. "";
 		require_once($ciniki['config']['core']['modules_dir'] . '/core/private/dbHashIDQuery.php');
-		$rc = ciniki_core_dbHashIDQuery($ciniki, $strsql, 'media', 'ids', 'id');
+		$rc = ciniki_core_dbHashIDQuery($ciniki, $strsql, 'ciniki.media', 'ids', 'id');
 		if( $rc['stat'] != 'ok' ) {
 			return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'345', 'msg'=>'Access denied.', 'err'=>$rc['err']));
 		}
@@ -103,7 +103,7 @@ function ciniki_media_checkAccess($ciniki, $business_id, $method, $media) {
 			. "AND user_id = '" . ciniki_core_dbQuote($ciniki, $ciniki['session']['user']['id']) . "' "
 			. "AND CONCAT_WS('.', package, permission_group) IN ('" . implode("','", $rules['permission_groups']) . "') "
 			. "";
-		$rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'businesses', 'user');
+		$rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.businesses', 'user');
 		if( $rc['stat'] != 'ok' ) {
 			return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'322', 'msg'=>'Access denied.', 'err'=>$rc['err']));
 		}
@@ -126,7 +126,7 @@ function ciniki_media_checkAccess($ciniki, $business_id, $method, $media) {
 //			. "WHERE ciniki_business_users.user_id = '" . ciniki_core_dbQuote($ciniki, $ciniki['session']['user']['id']) . "' "
 //			. "AND ciniki_business_users.business_id = ciniki_businesses.id "
 //			. "AND ciniki_businesses.status = 1 ";
-//		$rc = mysql_core_dbHashQuery($ciniki, $strsql, 'businesses', 'user');
+//		$rc = mysql_core_dbHashQuery($ciniki, $strsql, 'ciniki.businesses', 'user');
 ////		if( $rc['stat'] != 'ok' ) {
 //			return $rc;
 //		}
@@ -143,7 +143,7 @@ function ciniki_media_checkAccess($ciniki, $business_id, $method, $media) {
 	//	sql = "SELECT * FROM customers "
 	//		. "WHERE customers.business_id = '" . ciniki_core_dbQuote($ciniki, $business_id) . "'"
 	//		. "AND customers.user_id = ";
-	//	$rc = mysql_core_dbHashQuery($ciniki, $strsql, 'businesses', 'user');
+	//	$rc = mysql_core_dbHashQuery($ciniki, $strsql, 'ciniki.businesses', 'user');
 	//	if( $rc['stat'] != 'ok' ) {
 	//		return $rc;
 	//	}

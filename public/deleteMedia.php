@@ -12,6 +12,8 @@
 //
 // Arguments
 // ---------
+// api_key:
+// auth_token:
 // business_id:			The business the image is attached to.
 // media_id:			The ID if the media to be marked as deleted.
 //
@@ -51,10 +53,17 @@ function ciniki_media_deleteMedia($ciniki) {
 	$strsql = "UPDATE ciniki_media SET flags = flags | 0x01 "
 		. "WHERE business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
 		. "AND id = '" . ciniki_core_dbQuote($ciniki, $args['media_id']) . "' ";
-	$rc = ciniki_core_dbUpdate($ciniki, $strsql, 'media');
+	$rc = ciniki_core_dbUpdate($ciniki, $strsql, 'ciniki.media');
 	if( $rc['stat'] != 'ok' ) { 
 		return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'338', 'msg'=>'Unable to delete media', 'err'=>$rc['err']));
 	}
+
+	//
+	// Update the last_change date in the business modules
+	// Ignore the result, as we don't want to stop user updates if this fails.
+	//
+	ciniki_core_loadMethod($ciniki, 'ciniki', 'businesses', 'private', 'updateModuleChangeDate');
+	ciniki_businesses_updateModuleChangeDate($ciniki, $args['business_id'], 'ciniki', 'media');
 
 	return array('stat'=>'ok');
 }

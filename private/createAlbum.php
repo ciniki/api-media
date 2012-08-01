@@ -50,7 +50,7 @@ function ciniki_media_createAlbum($ciniki, $business_id, $parent_id, $album_info
 	}
 	$strsql .= "UTC_TIMESTAMP(), UTC_TIMESTAMP())";
 
-	$rc = ciniki_core_dbInsert($ciniki, $strsql, 'media');
+	$rc = ciniki_core_dbInsert($ciniki, $strsql, 'ciniki.media');
 	if( $rc['stat'] != 'ok' ) { 	
 		return $rc;
 	}
@@ -67,11 +67,18 @@ function ciniki_media_createAlbum($ciniki, $business_id, $parent_id, $album_info
 			. "'title', "
 			. "'" . ciniki_core_dbQuote($ciniki, $album_info['title']) . "', "
 			. "UTC_TIMESTAMP(), UTC_TIMESTAMP())";
-		$rc = ciniki_core_dbInsert($ciniki, $strsql, 'media');
+		$rc = ciniki_core_dbInsert($ciniki, $strsql, 'ciniki.media');
 		if( $rc['stat'] != 'ok' ) { 	
 			return $rc;
 		}
 	}
+
+	//
+	// Update the last_change date in the business modules
+	// Ignore the result, as we don't want to stop user updates if this fails.
+	//
+	ciniki_core_loadMethod($ciniki, 'ciniki', 'businesses', 'private', 'updateModuleChangeDate');
+	ciniki_businesses_updateModuleChangeDate($ciniki, $business_id, 'ciniki', 'media');
 
 	return array('stat'=>'ok', 'id'=>$album_id);
 }

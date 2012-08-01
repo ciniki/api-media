@@ -11,6 +11,8 @@
 //
 // Arguments
 // ---------
+// api_key:
+// auth_token:
 // business_id:			The business the image is attached to.
 // media_id:			The ID if the media to be marked as deleted.
 // parent_id:			The new parent_id of the media
@@ -60,7 +62,7 @@ function ciniki_media_changeParent($ciniki) {
 	require_once($ciniki['config']['core']['modules_dir'] . '/core/private/dbTransactionStart.php');
 	require_once($ciniki['config']['core']['modules_dir'] . '/core/private/dbTransactionRollback.php');
 	require_once($ciniki['config']['core']['modules_dir'] . '/core/private/dbTransactionCommit.php');
-	$rc = ciniki_core_dbTransactionStart($ciniki, 'media');
+	$rc = ciniki_core_dbTransactionStart($ciniki, 'ciniki.media');
 	if( $rc['stat'] != 'ok' ) { 
 		return $rc;
 	}
@@ -72,13 +74,13 @@ function ciniki_media_changeParent($ciniki) {
 		. "WHERE business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
 		. "AND id = '" . ciniki_core_dbQuote($ciniki, $args['media_id']) . "' "
 		. "";
-	$rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'media', 'parent');
+	$rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.media', 'parent');
 	if( $rc['stat'] != 'ok' ) { 
-		ciniki_core_dbTransactionRollback($ciniki, 'media');
+		ciniki_core_dbTransactionRollback($ciniki, 'ciniki.media');
 		return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'351', 'msg'=>'Unable to move', 'err'=>$rc['err']));
 	}
 	if( !isset($rc['parent']) || !isset($rc['parent']['parent_id']) || $rc['parent']['parent_id'] < 0 ) {
-		ciniki_core_dbTransactionRollback($ciniki, 'media');
+		ciniki_core_dbTransactionRollback($ciniki, 'ciniki.media');
 		return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'352', 'msg'=>'Unable to move'));
 	}
 	$old_parent_id = $rc['parent']['parent_id'];
@@ -91,9 +93,9 @@ function ciniki_media_changeParent($ciniki) {
 		. "WHERE business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
 		. "AND id = '" . ciniki_core_dbQuote($ciniki, $args['media_id']) . "' "
 		. "";
-	$rc = ciniki_core_dbUpdate($ciniki, $strsql, 'media', 'info');
+	$rc = ciniki_core_dbUpdate($ciniki, $strsql, 'ciniki.media', 'info');
 	if( $rc['stat'] != 'ok' ) { 	
-		ciniki_core_dbTransactionRollback($ciniki, 'media');
+		ciniki_core_dbTransactionRollback($ciniki, 'ciniki.media');
 		return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'353', 'msg'=>'Unable to move', 'err'=>$rc['err']));
 	}
 
@@ -106,9 +108,9 @@ function ciniki_media_changeParent($ciniki) {
 			. "WHERE business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
 			. "AND parent_id = '" . ciniki_core_dbQuote($ciniki, $old_parent_id) . "' "
 			. "GROUP BY parent_id ";
-		$rc = ciniki_core_dbCount($ciniki, $strsql, 'media', 'items');
+		$rc = ciniki_core_dbCount($ciniki, $strsql, 'ciniki.media', 'items');
 		if( $rc['stat'] != 'ok' ) { 	
-			ciniki_core_dbTransactionRollback($ciniki, 'media');
+			ciniki_core_dbTransactionRollback($ciniki, 'ciniki.media');
 			return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'354', 'msg'=>'Unable to move', 'err'=>$rc['err']));
 		}
 		//
@@ -119,26 +121,33 @@ function ciniki_media_changeParent($ciniki) {
 				. "WHERE business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
 				. "AND id = '" . ciniki_core_dbQuote($ciniki, $old_parent_id) . "' "
 				. "";
-			$rc = ciniki_core_dbDelete($ciniki, $strsql, 'media');
+			$rc = ciniki_core_dbDelete($ciniki, $strsql, 'ciniki.media');
 			if( $rc['stat'] != 'ok' ) { 	
-				ciniki_core_dbTransactionRollback($ciniki, 'media');
+				ciniki_core_dbTransactionRollback($ciniki, 'ciniki.media');
 				return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'355', 'msg'=>'Unable to move', 'err'=>$rc['err']));
 			}
 			$strsql = "DELETE FROM ciniki_media_details "
 				. "WHERE media_id = '" . ciniki_core_dbQuote($ciniki, $old_parent_id) . "' "
 				. "";
-			$rc = ciniki_core_dbDelete($ciniki, $strsql, 'media');
+			$rc = ciniki_core_dbDelete($ciniki, $strsql, 'ciniki.media');
 			if( $rc['stat'] != 'ok' ) { 	
-				ciniki_core_dbTransactionRollback($ciniki, 'media');
+				ciniki_core_dbTransactionRollback($ciniki, 'ciniki.media');
 				return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'356', 'msg'=>'Unable to move', 'err'=>$rc['err']));
 			}
 		}
 	}
 
-	$rc = ciniki_core_dbTransactionCommit($ciniki, 'media');
+	$rc = ciniki_core_dbTransactionCommit($ciniki, 'ciniki.media');
 	if( $rc['stat'] != 'ok' ) { 	
 		return $rc;
 	}
+
+	//
+	// Update the last_change date in the business modules
+	// Ignore the result, as we don't want to stop user updates if this fails.
+	//
+	ciniki_core_loadMethod($ciniki, 'ciniki', 'businesses', 'private', 'updateModuleChangeDate');
+	ciniki_businesses_updateModuleChangeDate($ciniki, $args['business_id'], 'ciniki', 'media');
 
 	return array('stat'=>'ok', 'id'=>$album_id);
 }
