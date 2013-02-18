@@ -21,8 +21,8 @@ function ciniki_media_uploadImage($ciniki) {
 	//
 	// Check args
 	//
-	require_once($ciniki['config']['core']['modules_dir'] . '/core/private/prepareArgs.php');
-	require_once($ciniki['config']['core']['modules_dir'] . '/core/private/dbQuote.php');
+	ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'prepareArgs');
+	ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbQuote');
 	$rc = ciniki_core_prepareArgs($ciniki, 'no', array(
 		'business_id'=>array('required'=>'yes', 'blank'=>'no', 'errmsg'=>'No business specified'), 
 		'parent_id'=>array('required'=>'no', 'default'=>'0', 'blank'=>'yes', 'errmsg'=>'Invalid parent_id'),
@@ -38,7 +38,7 @@ function ciniki_media_uploadImage($ciniki) {
 	// Make sure this module is activated, and 
 	// check permission to run this function for this business
 	//  
-	require_once($ciniki['config']['core']['modules_dir'] . '/media/private/checkAccess.php');
+	ciniki_core_loadMethod($ciniki, 'ciniki', 'media', 'private', 'checkAccess');
 	$rc = ciniki_media_checkAccess($ciniki, $args['business_id'], 'ciniki.media.uploadImage', array()); 
 	if( $rc['stat'] != 'ok' ) { 
 		return $rc;

@@ -25,10 +25,10 @@ function ciniki_media_createAlbumFromMedia($ciniki) {
 	//
 	// Check args
 	//
-	require_once($ciniki['config']['core']['modules_dir'] . '/core/private/prepareArgs.php');
-	require_once($ciniki['config']['core']['modules_dir'] . '/core/private/dbQuote.php');
-	require_once($ciniki['config']['core']['modules_dir'] . '/core/private/dbUpdate.php');
-	require_once($ciniki['config']['core']['modules_dir'] . '/core/private/dbInsert.php');
+	ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'prepareArgs');
+	ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbQuote');
+	ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbUpdate');
+	ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbInsert');
 	$rc = ciniki_core_prepareArgs($ciniki, 'no', array(
 		'business_id'=>array('required'=>'yes', 'blank'=>'no', 'errmsg'=>'No business specified'), 
 		'parent_id'=>array('required'=>'yes', 'blank'=>'no', 'errmsg'=>'No business specified'), 
@@ -44,7 +44,7 @@ function ciniki_media_createAlbumFromMedia($ciniki) {
 	// check session user permission to run this function for this business
 	// check the media requested is attached to the business
 	//  
-	require_once($ciniki['config']['core']['modules_dir'] . '/media/private/checkAccess.php');
+	ciniki_core_loadMethod($ciniki, 'ciniki', 'media', 'private', 'checkAccess');
 	$media_ids = $args['media'];
 	if( $args['parent_id'] > 0 ) {
 		array_push($media_ids, (int)$args['parent_id']);
@@ -65,9 +65,9 @@ function ciniki_media_createAlbumFromMedia($ciniki) {
 	//  
 	// Start a database transaction
 	//  
-	require_once($ciniki['config']['core']['modules_dir'] . '/core/private/dbTransactionStart.php');
-	require_once($ciniki['config']['core']['modules_dir'] . '/core/private/dbTransactionRollback.php');
-	require_once($ciniki['config']['core']['modules_dir'] . '/core/private/dbTransactionCommit.php');
+	ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbTransactionStart');
+	ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbTransactionRollback');
+	ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbTransactionCommit');
 	$rc = ciniki_core_dbTransactionStart($ciniki, 'ciniki.media');
 	if( $rc['stat'] != 'ok' ) { 
 		return $rc;
@@ -105,7 +105,7 @@ function ciniki_media_createAlbumFromMedia($ciniki) {
 		//
 		// Get the image title and set the album title
 		//
-		require_once($ciniki['config']['core']['modules_dir'] . '/images/private/getImageTitle.php');
+		ciniki_core_loadMethod($ciniki, 'ciniki', 'images', 'private', 'getImageTitle');
 		$rc = ciniki_images_getImageTitle($ciniki, $args['business_id'], $rc['info']['remote_id']);
 		if( $rc['stat'] != 'ok' ) { 	
 			ciniki_core_dbTransactionRollback($ciniki, 'ciniki.media');
@@ -134,7 +134,7 @@ function ciniki_media_createAlbumFromMedia($ciniki) {
 	//
 	// Create the album
 	//
-	require_once($ciniki['config']['core']['modules_dir'] . '/media/private/createAlbum.php');
+	ciniki_core_loadMethod($ciniki, 'ciniki', 'media', 'private', 'createAlbum');
 	$rc = ciniki_media_createAlbum($ciniki, $args['business_id'], $args['parent_id'], $album_info);
 	if( $rc['stat'] != 'ok' ) {
 		ciniki_core_dbTransactionRollback($ciniki, 'ciniki.media');

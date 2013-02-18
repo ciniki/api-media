@@ -18,7 +18,7 @@ function ciniki_media_checkAccess($ciniki, $business_id, $method, $media) {
 	//
 	// Check if the business is active and the module is enabled
 	//
-	require_once($ciniki['config']['core']['modules_dir'] . '/businesses/private/checkModuleAccess.php');
+	ciniki_core_loadMethod($ciniki, 'ciniki', 'businesses', 'private', 'checkModuleAccess');
 	$rc = ciniki_businesses_checkModuleAccess($ciniki, $business_id, 'ciniki', 'media');
 	if( $rc['stat'] != 'ok' ) {
 		return $rc;
@@ -29,12 +29,12 @@ function ciniki_media_checkAccess($ciniki, $business_id, $method, $media) {
 	}
 	$modules = $rc['modules'];
 
-	require_once($ciniki['config']['core']['modules_dir'] . '/core/private/dbQuoteIDs.php');
-	require_once($ciniki['config']['core']['modules_dir'] . '/core/private/logSecurity.php');
+	ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbQuoteIDs');
+	ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'logSecurity');
 	//
 	// Load the rulesets for this module
 	//
-	require_once($ciniki['config']['core']['modules_dir'] . '/media/private/getRulesets.php');
+	ciniki_core_loadMethod($ciniki, 'ciniki', 'media', 'private', 'getRulesets');
 	$rulesets = ciniki_media_getRuleSets($ciniki);
 
 	//
@@ -70,7 +70,7 @@ function ciniki_media_checkAccess($ciniki, $business_id, $method, $media) {
 			. "WHERE business_id = '" . ciniki_core_dbQuote($ciniki, $business_id) . "' "
 			. "AND id IN (" . ciniki_core_dbQuoteIDs($ciniki, $media) . ") "
 			. "";
-		require_once($ciniki['config']['core']['modules_dir'] . '/core/private/dbHashIDQuery.php');
+		ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashIDQuery');
 		$rc = ciniki_core_dbHashIDQuery($ciniki, $strsql, 'ciniki.media', 'ids', 'id');
 		if( $rc['stat'] != 'ok' ) {
 			return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'345', 'msg'=>'Access denied.', 'err'=>$rc['err']));

@@ -25,9 +25,9 @@ function ciniki_media_deleteMedia($ciniki) {
 	//
 	// Check args
 	//
-	require_once($ciniki['config']['core']['modules_dir'] . '/core/private/prepareArgs.php');
-	require_once($ciniki['config']['core']['modules_dir'] . '/core/private/dbQuote.php');
-	require_once($ciniki['config']['core']['modules_dir'] . '/core/private/dbUpdate.php');
+	ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'prepareArgs');
+	ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbQuote');
+	ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbUpdate');
 	$rc = ciniki_core_prepareArgs($ciniki, 'no', array(
 		'business_id'=>array('required'=>'yes', 'blank'=>'no', 'errmsg'=>'No business specified'), 
 		'media_id'=>array('required'=>'yes', 'blank'=>'no', 'errmsg'=>'No media specified'), 
@@ -41,7 +41,7 @@ function ciniki_media_deleteMedia($ciniki) {
 	// Make sure this module is activated, and 
 	// check session user permission to run this function for this business
 	//  
-	require_once($ciniki['config']['core']['modules_dir'] . '/media/private/checkAccess.php');
+	ciniki_core_loadMethod($ciniki, 'ciniki', 'media', 'private', 'checkAccess');
 	$rc = ciniki_media_checkAccess($ciniki, $args['business_id'], 'ciniki.media.deleteMedia', array((int)$args['media_id'])); 
 	if( $rc['stat'] != 'ok' ) { 
 		return $rc;

@@ -28,8 +28,8 @@ function ciniki_media_getTrashContents($ciniki) {
 	//
 	// Check args
 	//
-	require_once($ciniki['config']['core']['modules_dir'] . '/core/private/prepareArgs.php');
-	require_once($ciniki['config']['core']['modules_dir'] . '/core/private/dbQuote.php');
+	ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'prepareArgs');
+	ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbQuote');
 	$rc = ciniki_core_prepareArgs($ciniki, 'no', array(
 		'business_id'=>array('required'=>'yes', 'blank'=>'no', 'errmsg'=>'No business specified'), 
 		'parent_id'=>array('required'=>'no', 'blank'=>'yes', 'errmsg'=>'Invalid parent_id'),
@@ -43,7 +43,7 @@ function ciniki_media_getTrashContents($ciniki) {
 	// Make sure this module is activated, and 
 	// check permission to run this function for this business
 	//  
-	require_once($ciniki['config']['core']['modules_dir'] . '/media/private/checkAccess.php');
+	ciniki_core_loadMethod($ciniki, 'ciniki', 'media', 'private', 'checkAccess');
 	$rc = ciniki_media_checkAccess($ciniki, $args['business_id'], 'ciniki.media.getTrashContents', array()); 
 	if( $rc['stat'] != 'ok' ) { 
 		return $rc;
@@ -52,7 +52,7 @@ function ciniki_media_getTrashContents($ciniki) {
 	//
 	// Get the content for the album
 	//
-	require_once($ciniki['config']['core']['modules_dir'] . '/users/private/datetimeFormat.php');
+	ciniki_core_loadMethod($ciniki, 'ciniki', 'users', 'private', 'datetimeFormat');
 	$date_format = ciniki_users_datetimeFormat($ciniki);
 	$strsql = "SELECT id, parent_id, type, remote_id, sequence, perms, "
 		. "DATE_FORMAT(date_added, '" . ciniki_core_dbQuote($ciniki, $date_format) . "') as date_added, "
@@ -71,8 +71,8 @@ function ciniki_media_getTrashContents($ciniki) {
 	// Also, this module must not query directly the images module incase it
 	// is not located on the same server.
 	//
-	require_once($ciniki['config']['core']['modules_dir'] . '/core/private/dbQuery.php');
-	require_once($ciniki['config']['core']['modules_dir'] . '/core/private/dbFetchHashRow.php');
+	ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbQuery');
+	ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbFetchHashRow');
 	$rc = ciniki_core_dbQuery($ciniki, $strsql, 'ciniki.media');
 	if( $rc['stat'] != 'ok' ) {
 		return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'299', 'msg'=>'Unable to find album content', 'err'=>$rc['err']));
@@ -110,7 +110,7 @@ function ciniki_media_getTrashContents($ciniki) {
 	// Get the images
 	//
 	if( count($image_ids) > 0 ) {
-		require_once($ciniki['config']['core']['modules_dir'] . '/images/private/getImagesFromArray.php');
+		ciniki_core_loadMethod($ciniki, 'ciniki', 'images', 'private', 'getImagesFromArray');
 		$rc = ciniki_images_getImagesFromArray($ciniki, $args['business_id'], $image_ids);
 		if( $rc['stat'] != 'ok' ) {
 			return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'288', 'msg'=>'Error getting image information', 'err'=>$rc['err']));
@@ -124,7 +124,7 @@ function ciniki_media_getTrashContents($ciniki) {
 	// Get the album details
 	//
 	if( count($album_ids) > 0 ) {
-		require_once($ciniki['config']['core']['modules_dir'] . '/core/private/dbHashIDQuery.php');
+		ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashIDQuery');
 		$strsql = "SELECT media_id, detail_key, detail_value FROM ciniki_media_details "
 			. "WHERE media_id IN (" . ciniki_core_dbQuoteIDs($ciniki, $album_ids) . ") AND detail_key = 'title' ";
 		$rc = ciniki_core_dbHashIDQuery($ciniki, $strsql, 'ciniki.media', 'albums', 'media_id');
