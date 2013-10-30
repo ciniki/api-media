@@ -29,8 +29,8 @@ function ciniki_media_deleteMedia($ciniki) {
 	ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbQuote');
 	ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbUpdate');
 	$rc = ciniki_core_prepareArgs($ciniki, 'no', array(
-		'business_id'=>array('required'=>'yes', 'blank'=>'no', 'errmsg'=>'No business specified'), 
-		'media_id'=>array('required'=>'yes', 'blank'=>'no', 'errmsg'=>'No media specified'), 
+		'business_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Business'), 
+		'media_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Media'), 
 		));
 	if( $rc['stat'] != 'ok' ) {
 		return $rc;

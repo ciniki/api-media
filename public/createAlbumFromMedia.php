@@ -30,9 +30,9 @@ function ciniki_media_createAlbumFromMedia($ciniki) {
 	ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbUpdate');
 	ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbInsert');
 	$rc = ciniki_core_prepareArgs($ciniki, 'no', array(
-		'business_id'=>array('required'=>'yes', 'blank'=>'no', 'errmsg'=>'No business specified'), 
-		'parent_id'=>array('required'=>'yes', 'blank'=>'no', 'errmsg'=>'No business specified'), 
-		'media'=>array('required'=>'yes', 'blank'=>'no', 'type'=>'idlist', 'errmsg'=>'No media specified'), 
+		'business_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Business'), 
+		'parent_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Parent'), 
+		'media'=>array('required'=>'yes', 'blank'=>'no', 'type'=>'idlist', 'name'=>'Media'), 
 		));
 	if( $rc['stat'] != 'ok' ) {
 		return $rc;

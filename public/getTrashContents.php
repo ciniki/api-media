@@ -31,8 +31,8 @@ function ciniki_media_getTrashContents($ciniki) {
 	ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'prepareArgs');
 	ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbQuote');
 	$rc = ciniki_core_prepareArgs($ciniki, 'no', array(
-		'business_id'=>array('required'=>'yes', 'blank'=>'no', 'errmsg'=>'No business specified'), 
-		'parent_id'=>array('required'=>'no', 'blank'=>'yes', 'errmsg'=>'Invalid parent_id'),
+		'business_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Business'), 
+		'parent_id'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Parent'),
 		));
 	if( $rc['stat'] != 'ok' ) {
 		return $rc;
@@ -60,7 +60,7 @@ function ciniki_media_getTrashContents($ciniki) {
 		. "FROM ciniki_media "
 		. "WHERE business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' ";
 	if( isset($args['parent_id']) ) {
-		$strsql .= "AND parent_id = '" . ciniki_core_dbQuote($ciniki, $args['parent_id']) . "' "
+		$strsql .= "AND parent_id = '" . ciniki_core_dbQuote($ciniki, $args['parent_id']) . "' ";
 	}
 	$strsql .= "AND (flags^0x01) = 0x01 "
 		. "ORDER BY sequence "

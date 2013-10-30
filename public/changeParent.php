@@ -31,9 +31,9 @@ function ciniki_media_changeParent($ciniki) {
 	ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbCount');
 	ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbDelete');
 	$rc = ciniki_core_prepareArgs($ciniki, 'no', array(
-		'business_id'=>array('required'=>'yes', 'blank'=>'no', 'errmsg'=>'No business specified'), 
-		'media_id'=>array('required'=>'yes', 'blank'=>'no', 'errmsg'=>'No media specified'), 
-		'parent_id'=>array('required'=>'yes', 'blank'=>'no', 'errmsg'=>'No business specified'), 
+		'business_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Business'), 
+		'media_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Media'), 
+		'parent_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Parent'), 
 		));
 	if( $rc['stat'] != 'ok' ) {
 		return $rc;
